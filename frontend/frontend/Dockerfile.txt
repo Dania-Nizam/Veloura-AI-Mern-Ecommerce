@@ -1,0 +1,21 @@
+# 1. Python ka official lightweight image use karein
+FROM python:3.10-slim
+
+# 2. Container ke andar working directory set karein
+WORKDIR /app
+
+# 3. Pehle requirements copy karke install karein
+COPY backend/ai_agent/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 4. Poora project container mein copy karein
+COPY . .
+
+# 5. Working directory ko ai_agent wale folder par switch karein jahan main.py hai
+WORKDIR /app/backend/ai_agent
+
+# 6. Port 7860 expose karein (Hugging Face isi port par sunta hai)
+EXPOSE 7860
+
+# 7. FastAPI server ko uvicorn ke zariye chalayein
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
