@@ -24,7 +24,7 @@ const PersonalCareScreen = () => {
         const fetchPersonalCareAndWishlist = async () => {
             try {
                 // 1. Fetch Products
-                const { data } = await axios.get('http://localhost:5000/api/products');
+                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
                 const filteredCare = data.filter(
                     (p) => p.category && p.category.trim().toLowerCase().includes('care')
                 );
@@ -151,14 +151,14 @@ const PersonalCareScreen = () => {
                                 try {
                                     const targetId = isWishlisted._id || p._id;
                                     dispatch(removeFromWishlist(targetId));
-                                    await axios.delete(`http://localhost:5000/api/wishlist/${p._id}`, config);
+                                    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${p._id}`, config);
                                 } catch (err) {
                                     console.error("Wishlist DB remove error:", err);
                                 }
                             } else {
                                 try {
                                     dispatch(addToWishlist(p));
-                                    await axios.post('http://localhost:5000/api/wishlist', { productId: p._id, userId: user._id || user.user?._id }, config);
+                                    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`, { productId: p._id, userId: user._id || user.user?._id }, config);
                                 } catch (err) {
                                     console.error("Wishlist DB add error:", err);
                                 }

@@ -43,7 +43,7 @@ const FragranceScreen = () => {
                     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
                     
                     const userId = user._id || user.user?._id;
-                    const { data: wishlistData } = await axios.get(`http://localhost:5000/api/wishlist/${userId}`, config);
+                    const { data: wishlistData } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${userId}`, config);
                     if (wishlistData && wishlistData.items) {
                         dispatch(setWishlist(wishlistData.items));
                     } else if (Array.isArray(wishlistData)) {
@@ -188,7 +188,7 @@ const FragranceScreen = () => {
                                         try {
                                             const targetId = isWishlisted._id || p._id;
                                             dispatch(removeFromWishlist(targetId));
-                                            await axios.delete(`http://localhost:5000/api/wishlist/${p._id}`, config);
+                                            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${p._id}`, config);
                                         } catch (err) {
                                             console.error("Wishlist DB remove error:", err);
                                         }

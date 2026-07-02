@@ -42,7 +42,7 @@ const WishlistScreen = () => {
           const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
           
           // 🚀 Sahi port (5000) aur dynamic userId append kiya
-          const { data } = await axios.get(`http://localhost:5000/api/wishlist/${userId}`, config);
+          const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${userId}`, config);
           
           // Agar backend response de toh use Redux ya local state me set karein
           if (data && data.items) {
@@ -75,7 +75,7 @@ const WishlistScreen = () => {
       if (userId && targetId) {
         const config = userInfo?.token ? { headers: { Authorization: `Bearer ${userInfo.token}` } } : {};
         // Delete request hitting server route directly
-        await axios.delete(`http://localhost:5000/api/wishlist/${userId}/${targetId}`, config);
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${userId}/${targetId}`, config);
       }
     } catch (error) {
       console.error("Failed to delete item from DB on Move-To-Bag:", error);

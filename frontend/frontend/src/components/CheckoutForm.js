@@ -46,7 +46,7 @@ const CheckoutForm = ({ totalAmount }) => {
       if (result.error) throw new Error(result.error.message);
       
       if (result.paymentIntent.status === "succeeded") {
-  await axios.post("http://localhost:5000/api/orders", {
+  await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
     orderItems: cartItems.map(item => ({ 
       name: item.name, 
       qty: item.qty, 

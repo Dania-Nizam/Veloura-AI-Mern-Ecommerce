@@ -47,7 +47,7 @@ const ChatAgent = () => {
             };
 
             const { data } = await axios.post(
-                'http://localhost:5000/api/chat',
+                `${process.env.NEXT_PUBLIC_API_URL}/api/chat`,
                 {
                     message: currentInput,
                     user_id: userInfo?._id || "guest_user"

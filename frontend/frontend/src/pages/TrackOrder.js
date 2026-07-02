@@ -49,7 +49,7 @@ const TrackOrder = () => {
     setLoading(true);
     try {
       const config = getAuthConfig();
-      const { data } = await axios.get(`http://localhost:5000/api/orders/${cleanId}/status`, config);
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${cleanId}/status`, config);
       setOrderStatus(data);
     } catch (error) {
       console.error("Auto-track failed", error);
@@ -66,7 +66,7 @@ const TrackOrder = () => {
     setLoading(true);
     try {
       const config = getAuthConfig();
-      const { data } = await axios.get(`http://localhost:5000/api/orders/${cleanId}/status`, config);
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${cleanId}/status`, config);
       setOrderStatus(data);
     } catch (error) {
       setOrderStatus(null);
