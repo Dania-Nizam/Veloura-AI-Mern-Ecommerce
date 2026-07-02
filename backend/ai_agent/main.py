@@ -1,10 +1,12 @@
+import os
+from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
-from typing import Optional
-import os
+
+# 🎯 Wapas Async Motor Client par switch karein (Taake user_agent ke await operations crash na hon)
+from motor.motor_asyncio import AsyncIOMotorClient 
 
 from user_agent import user_agent
 from admin_agent import admin_agent
@@ -21,22 +23,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-mongo = AsyncIOMotorClient(os.getenv("MONGO_URI"))
+# 🎯 Environment variable explicit call aur Motor database setup
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://127.0.0.1:27017/ecommerce")
+mongo = AsyncIOMotorClient(MONGO_URI)
 db = mongo["ecommerce"]
-
 
 class ChatRequest(BaseModel):
     message: str
     user_id: str
     role: Optional[str] = "customer"
 
-
 @app.post("/chat")
 async def chat(req: ChatRequest):
-
+    # Dono agents async database operations handle karte hain, isliye 'db' async hona zaroori hai
     if req.role == "admin":
         reply = await admin_agent(req.message, db, req.user_id)
     else:
         reply = await user_agent(req.message, db, req.user_id)
 
-    return {"response": reply}
+    # 🎯 Frontend structure key format fix (Aapke UI response parsing ke mutabiq)
+    return {"reply": reply}

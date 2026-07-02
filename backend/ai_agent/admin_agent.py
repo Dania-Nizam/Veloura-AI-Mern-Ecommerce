@@ -3,7 +3,7 @@ import re
 from dotenv import load_dotenv
 from openai import APITimeoutError
 
-from agents import (
+from openai_agents import (
     Agent,
     Runner,
     OpenAIChatCompletionsModel,
@@ -87,6 +87,7 @@ async def admin_agent(msg: str, db, user_id: str):
     else:
 
         try:
+            # Runner pipelines stay async
             result = await Runner.run(
                 admin_agent_core,
                 input=msg,
@@ -136,18 +137,17 @@ async def admin_agent(msg: str, db, user_id: str):
             {"$limit": 5}
         ]
 
-        top_sales = await db.orders.aggregate(
-            pipeline
-        ).to_list(5)
+        # 🎯 FIX: Hataya await aur cast kiya list mein limits ke sath
+        top_sales = list(db.orders.aggregate(pipeline))
 
-        revenue_data = await db.orders.aggregate([
+        revenue_data = list(db.orders.aggregate([
             {
                 "$group": {
                     "_id": None,
                     "total": {"$sum": "$totalPrice"}
                 }
             }
-        ]).to_list(1)
+        ]))
 
         total_revenue = (
             revenue_data[0]["total"]
@@ -178,7 +178,8 @@ async def admin_agent(msg: str, db, user_id: str):
 
     if output == "VIEW_PRODUCTS":
 
-        products = await db.products.find().to_list(50)
+        # 🎯 FIX: Hataya await aur lagaya standard limit list casting
+        products = list(db.products.find().limit(50))
 
         if not products:
             return "No products found"
@@ -196,11 +197,12 @@ async def admin_agent(msg: str, db, user_id: str):
 
     if output == "INVENTORY":
 
-        total = await db.products.count_documents({})
+        # 🎯 FIX: Hataya await document counting se
+        total = db.products.count_documents({})
 
-        low_stock = await db.products.find(
+        low_stock = list(db.products.find(
             {"countInStock": {"$lt": 5}}
-        ).to_list(20)
+        ).limit(20))
 
         res = (
             f"📦 Total Products: {total}\n"
@@ -221,10 +223,11 @@ async def admin_agent(msg: str, db, user_id: str):
 
     if output == "VIEW_USERS":
 
-        users = await db.users.find(
+        # 🎯 FIX: Hataya await find user queries se
+        users = list(db.users.find(
             {},
             {"password": 0}
-        ).to_list(50)
+        ).limit(50))
 
         if not users:
             return "No users found"
@@ -256,7 +259,8 @@ async def admin_agent(msg: str, db, user_id: str):
                 re.sub(r"\D", "", data[2])
             )
 
-            await db.products.insert_one({
+            # 🎯 FIX: Hataya await insert se
+            db.products.insert_one({
                 "name": name,
                 "price": price,
                 "countInStock": stock,
@@ -280,7 +284,8 @@ async def admin_agent(msg: str, db, user_id: str):
             "DELETE_PRODUCT:"
         )[1].strip()
 
-        res = await db.products.delete_one(
+        # 🎯 FIX: Hataya await delete se
+        res = db.products.delete_one(
             {"_id": pid}
         )
 
@@ -300,7 +305,8 @@ async def admin_agent(msg: str, db, user_id: str):
             "DELETE_USER:"
         )[1].strip()
 
-        res = await db.users.delete_one(
+        # 🎯 FIX: Hataya await delete se
+        res = db.users.delete_one(
             {"_id": uid}
         )
 
@@ -320,7 +326,8 @@ async def admin_agent(msg: str, db, user_id: str):
             "DELETE_ORDER:"
         )[1].strip()
 
-        res = await db.orders.delete_one(
+        # 🎯 FIX: Hataya await delete se
+        res = db.orders.delete_one(
             {"_id": oid}
         )
 
@@ -345,7 +352,8 @@ async def admin_agent(msg: str, db, user_id: str):
             oid = parts[0].strip()
             status = parts[1].strip()
 
-            await db.orders.update_one(
+            # 🎯 FIX: Hataya await update query se
+            db.orders.update_one(
                 {"_id": oid},
                 {"$set": {"status": status}}
             )

@@ -38,12 +38,21 @@ const ChatAgent = () => {
         setLoading(true);
 
         try {
+            // 🎯 FIX: Headers configuration for Token verification
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: userInfo?.token ? `Bearer ${userInfo.token}` : '',
+                },
+            };
+
             const { data } = await axios.post(
-                'http://127.0.0.1:8000/chat',
+                'http://localhost:5000/api/chat',
                 {
                     message: currentInput,
                     user_id: userInfo?._id || "guest_user"
-                }
+                },
+                config // 👈 Yeh config pass karna zaroori tha!
             );
 
             const botResponse = data?.response || "No response from server.";
@@ -78,7 +87,7 @@ const ChatAgent = () => {
 
     return (
         <>
-            {/* 🎯 FLOAT TRIGGER TRIGGER BUTTON */}
+            {/* 🎯 FLOAT TRIGGER BUTTON */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="fixed bottom-[25px] right-[25px] w-[64px] h-[64px] rounded-full bg-black text-white flex items-center justify-center shadow-2xl cursor-pointer border border-white/20 transition-transform duration-300 active:scale-95 z-[9999]"

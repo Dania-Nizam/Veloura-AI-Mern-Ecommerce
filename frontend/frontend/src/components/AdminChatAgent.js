@@ -15,9 +15,10 @@ const AdminChatAgent = () => {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
 
+  // 🎯 FIX: Element smooth view behavior check for reliable scrolling
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isOpen]);
 
@@ -32,11 +33,26 @@ const AdminChatAgent = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("http://127.0.0.1:8000/chat", {
-        message: currentInput,
-        user_id: userInfo?._id || "admin_main",
-        role: "admin" 
-      });
+      // 🔒 Authorization Token nikalein
+      const token = userInfo?.token || (localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")).token : null);
+
+      // 📝 Configuration headers setup karein
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        }
+      };
+
+      // 🌐 Sahi target endpoint Node.js port 5000 par
+      const { data } = await axios.post(
+        "http://localhost:5000/api/chat", 
+        {
+          message: currentInput,
+          user_id: userInfo?._id || "admin_main"
+        },
+        config 
+      );
 
       const botResponse = data.response;
       setMessages((prev) => [...prev, { role: "bot", text: botResponse }]);
@@ -56,6 +72,7 @@ const AdminChatAgent = () => {
       }
 
     } catch (error) {
+      console.error("Admin Chat Gateway Error:", error.response ? error.response.data : error.message);
       setMessages((prev) => [
         ...prev, 
         { role: "bot", text: "⚠️ System Alert: Unable to reach database terminal gateway." }
@@ -68,7 +85,7 @@ const AdminChatAgent = () => {
   return (
     <div className="fixed bottom-8 right-8 z-[9999] font-sans antialiased">
       
-      {/* 🟢 Premium Floating Action Button (Matching Main Admin Dashboard Color palette) */}
+      {/* 🟢 Premium Floating Action Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`group relative flex items-center justify-center w-16 h-16 rounded-2xl transition-all duration-500 shadow-xl border ${
@@ -90,7 +107,7 @@ const AdminChatAgent = () => {
         )}
       </button>
 
-      {/* 🔵 Executive Luxury Chat Window Dashboard Theme Match */}
+      {/* 🔵 Executive Luxury Chat Window Dashboard */}
       {isOpen && (
         <div className="absolute bottom-20 right-0 w-[410px] h-[580px] max-h-[82vh] bg-[#faf7f2] border-2 border-[#1f1f1f]/10 rounded-[24px] shadow-[0_20px_50px_rgba(31,31,31,0.15)] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-300">
           

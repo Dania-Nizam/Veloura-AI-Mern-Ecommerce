@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from agents import (
+from openai_agents import (
     Agent,
     Runner,
     OpenAIChatCompletionsModel,
@@ -29,15 +29,18 @@ config = RunConfig(
 )
 
 # =====================
-# SIMPLE TOOLS (NO SDK TOOL BINDING)
+# SYNCHRONOUS TOOLS (COMPATIBLE WITH STANDARD PYMONGO)
 # =====================
 
-async def list_products(db):
-    products = await db.products.find().to_list(100)
+def list_products(db):
+    # 🎯 FIX: 'await' aur '.to_list()' ki jagah standard list casting limit ke sath
+    products = list(db.products.find().limit(100))
+    if not products:
+        return "No products available in catalog."
     return "\n".join([f"{p['name']} - ${p['price']}" for p in products])
 
 
-async def add_to_cart(db, user_id, product_name):
+def add_to_cart(db, user_id, product_name):
     from bson import ObjectId
     
     try:
@@ -47,7 +50,8 @@ async def add_to_cart(db, user_id, product_name):
 
     clean_name = product_name.split("$")[0].strip()
 
-    product = await db.products.find_one({
+    # 🎯 FIX: No await
+    product = db.products.find_one({
         "name": {"$regex": clean_name, "$options": "i"}
     })
 
@@ -56,7 +60,8 @@ async def add_to_cart(db, user_id, product_name):
 
     product_oid = product["_id"]
 
-    cart_exists = await db.carts.find_one({"userId": user_oid})
+    # 🎯 FIX: No await
+    cart_exists = db.carts.find_one({"userId": user_oid})
 
     if cart_exists:
         item_exists = False
@@ -69,7 +74,8 @@ async def add_to_cart(db, user_id, product_name):
         if item_exists:
             return "⚠️ Already in cart"
 
-        await db.carts.update_one(
+        # 🎯 FIX: No await
+        db.carts.update_one(
             {"userId": user_oid},
             {"$push": {
                 "items": {
@@ -83,7 +89,8 @@ async def add_to_cart(db, user_id, product_name):
             }}
         )
     else:
-        await db.carts.insert_one({
+        # 🎯 FIX: No await
+        db.carts.insert_one({
             "userId": user_oid,
             "user_id": user_oid, 
             "items": [{
@@ -99,7 +106,7 @@ async def add_to_cart(db, user_id, product_name):
     return f"🛒 Added {product['name']}"
 
 
-async def remove_from_cart(db, user_id, name):
+def remove_from_cart(db, user_id, name):
     from bson import ObjectId
     try:
         user_oid = ObjectId(user_id) if isinstance(user_id, str) and len(user_id) == 24 else user_id
@@ -108,7 +115,8 @@ async def remove_from_cart(db, user_id, name):
 
     clean_name = name.split("$")[0].strip()
 
-    product = await db.products.find_one({
+    # 🎯 FIX: No await
+    product = db.products.find_one({
         "name": {"$regex": clean_name, "$options": "i"}
     })
 
@@ -117,7 +125,8 @@ async def remove_from_cart(db, user_id, name):
 
     product_oid = product["_id"]
 
-    result = await db.carts.update_one(
+    # 🎯 FIX: No await
+    result = db.carts.update_one(
         {"userId": user_oid},
         {
             "$pull": {
@@ -134,14 +143,15 @@ async def remove_from_cart(db, user_id, name):
         return f"Could not find {product['name']} inside your live cart database"
 
 
-async def view_cart(db, user_id):
+def view_cart(db, user_id):
     from bson import ObjectId
     try:
         user_oid = ObjectId(user_id) if isinstance(user_id, str) and len(user_id) == 24 else user_id
     except Exception:
         user_oid = user_id
 
-    cart = await db.carts.find_one({"userId": user_oid})
+    # 🎯 FIX: No await (Yahan se crash crash uth raha tha)
+    cart = db.carts.find_one({"userId": user_oid})
 
     if not cart or not cart.get("items") or len(cart["items"]) == 0:
         return "Cart empty"
@@ -160,7 +170,8 @@ async def view_cart(db, user_id):
         except Exception:
             prod_oid = prod_id
 
-        product_details = await db.products.find_one({"_id": prod_oid})
+        # 🎯 FIX: No await
+        product_details = db.products.find_one({"_id": prod_oid})
         
         if product_details:
             cart_lines.append(f"- {product_details['name']} (${product_details.get('price', 0)})")
@@ -170,7 +181,7 @@ async def view_cart(db, user_id):
     return "\n".join(cart_lines)
 
 
-async def add_to_wishlist(db, user_id, product_name):
+def add_to_wishlist(db, user_id, product_name):
     from bson import ObjectId
     try:
         user_oid = ObjectId(user_id) if isinstance(user_id, str) and len(user_id) == 24 else user_id
@@ -179,13 +190,15 @@ async def add_to_wishlist(db, user_id, product_name):
 
     clean_name = product_name.split("$")[0].strip()
 
-    product = await db.products.find_one({"name": {"$regex": clean_name, "$options": "i"}})
+    # 🎯 FIX: No await
+    product = db.products.find_one({"name": {"$regex": clean_name, "$options": "i"}})
     if not product:
         return "Product not found"
 
     product_oid = product["_id"]
 
-    wishlist_exists = await db.wishlists.find_one({"userId": user_oid})
+    # 🎯 FIX: No await
+    wishlist_exists = db.wishlists.find_one({"userId": user_oid})
 
     wishlist_item = {
         "productId": product_oid,
@@ -199,12 +212,14 @@ async def add_to_wishlist(db, user_id, product_name):
         if any(str(item.get("productId") or item.get("product")) == str(product_oid) for item in wishlist_exists.get("items", [])):
             return "❤️ Already in wishlist"
         
-        await db.wishlists.update_one(
+        # 🎯 FIX: No await
+        db.wishlists.update_one(
             {"userId": user_oid},
             {"$push": {"items": wishlist_item}}
         )
     else:
-        await db.wishlists.insert_one({
+        # 🎯 FIX: No await
+        db.wishlists.insert_one({
             "userId": user_oid,
             "user_id": user_oid,
             "items": [wishlist_item]
@@ -237,6 +252,7 @@ You MUST match these string patterns strictly when executing user actions. Do no
 # =====================
 async def user_agent(msg: str, db, user_id: str):
 
+    # Agent execution handles the async runner pipeline
     result = await Runner.run(
         agent,
         input=msg,
@@ -246,26 +262,25 @@ async def user_agent(msg: str, db, user_id: str):
     output = result.final_output
 
     # =====================
-    # MANUAL TOOL HANDLING
+    # MANUAL TOOL HANDLING (🎯 FIX: Removed all 'await' keywords from helper calls)
     # =====================
 
-    # ✨ FIXED PRIORITY: Checked wishlist action string first to prevent overlapping prefixes trigger conflicts
     if "ADD_WISHLIST:" in output:
         name = output.split("ADD_WISHLIST:")[1].strip()
-        return await add_to_wishlist(db, user_id, name)
+        return add_to_wishlist(db, user_id, name)
 
     if "SHOW_PRODUCTS" in output:
-        return await list_products(db)
+        return list_products(db)
 
     if "ADD:" in output:
         name = output.split("ADD:")[1].strip()
-        return await add_to_cart(db, user_id, name)
+        return add_to_cart(db, user_id, name)
 
     if "REMOVE:" in output:
         name = output.split("REMOVE:")[1].strip()
-        return await remove_from_cart(db, user_id, name)
+        return remove_from_cart(db, user_id, name)
 
     if "VIEW_CART" in output:
-        return await view_cart(db, user_id)
+        return view_cart(db, user_id)
 
     return output
