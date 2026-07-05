@@ -9,7 +9,7 @@ const WatchScreen = () => {
     useEffect(() => {
         const fetchWatches = async () => {
             try {
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products/category/watches`);
+                const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/category/watches`);
                 setProducts(data);
                 setLoading(false);
             } catch (error) {

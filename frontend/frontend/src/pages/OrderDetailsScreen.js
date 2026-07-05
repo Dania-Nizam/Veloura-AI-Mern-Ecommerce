@@ -28,7 +28,7 @@ const OrderDetailsScreen = () => {
           headers: { Authorization: `Bearer ${token}` },
         };
 
-        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${id}`, config);
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/orders/${id}`, config);
         setOrder(data);
         setLoading(false);
       } catch (err) {

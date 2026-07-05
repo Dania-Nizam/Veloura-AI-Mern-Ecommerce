@@ -9,7 +9,7 @@ const BestSellerScreen = () => {
   useEffect(() => {
     const fetchBestSellers = async () => {
       try {
-        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products/bestsellers`);
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/bestsellers`);
         setProducts(data);
         setLoading(false);
       } catch (error) {

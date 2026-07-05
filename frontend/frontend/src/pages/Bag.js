@@ -24,7 +24,7 @@ const BagScreen = () => {
         const fetchBagsAndWishlist = async () => {
             try {
                 // 1. Fetch Products
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products/category/bags`);
+                const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/category/bags`);
                 setProducts(data);
                 
                 // 2. Fetch and Sync Wishlist from DB if User is Logged In (As in Home.js)
@@ -35,7 +35,7 @@ const BagScreen = () => {
                     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
                     
                     const userId = user._id || user.user?._id;
-                    const { data: wishlistData } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/${userId}`, config);
+                    const { data: wishlistData } = await axios.get(`${process.env.REACT_APP_API_URL}/api/wishlist/${userId}`, config);
                     if (wishlistData && wishlistData.items) {
                         dispatch(setWishlist(wishlistData.items));
                     } else if (Array.isArray(wishlistData)) {

@@ -161,7 +161,7 @@ const AccessoriesScreen = () => {
                             } else {
                                 try {
                                     dispatch(addToWishlist(p));
-                                    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`, { productId: p._id, userId: user._id || user.user?._id }, config);
+                                    await axios.post(`${process.env.REACT_APP_API_URL}/api/wishlist`, { productId: p._id, userId: user._id || user.user?._id }, config);
                                 } catch (err) {
                                     console.error("Wishlist DB add error:", err);
                                 }

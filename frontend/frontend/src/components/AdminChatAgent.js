@@ -46,7 +46,7 @@ const AdminChatAgent = () => {
 
       // 🌐 Sahi target endpoint Node.js port 5000 par
       const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chat`, 
+        `${process.env.REACT_APP_API_URL}/api/chat`, 
         {
           message: currentInput,
           user_id: userInfo?._id || "admin_main"

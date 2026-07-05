@@ -25,7 +25,7 @@ const ProductScreen = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`);
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/${id}`);
         setProduct(data);
         setLoading(false);
       } catch (error) { 

@@ -29,7 +29,7 @@ const AdminDashboard = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const itemsPerPage = 5;
-  const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api`;
+  const API_BASE = `${process.env.REACT_APP_API_URL}/api`;
 
   // 🎨 Luxury Hero Theme Colors for Charts
   const PIE_COLORS = ['#1f1f1f', '#8d8070', '#b5a897', '#d9cfc1'];

@@ -20,7 +20,7 @@ const FashionScreen = () => {
     useEffect(() => {
         const fetchFashion = async () => {
             try {
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products/category/fashion`);
+                const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/category/fashion`);
                 setProducts(Array.isArray(data) ? data : []);
                 loading && setLoading(false);
             } catch (error) {

@@ -20,7 +20,7 @@ const ShoeScreen = () => {
     useEffect(() => {
         const fetchShoes = async () => {
             try {
-                const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products/category/Shoes`);
+                const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/products/category/Shoes`);
                 setProducts(data);
                 setLoading(false);
             } catch (error) {
