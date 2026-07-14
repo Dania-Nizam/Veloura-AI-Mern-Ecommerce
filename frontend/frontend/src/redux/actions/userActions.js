@@ -9,6 +9,17 @@ import {
   USER_LOGIN_FAIL,
 } from "../constants/userConstants";
 
+// 🌐 Dynamic Base URL Configuration
+// Agar app Vercel par chal rahi hai toh live backend URL use hoga, warna local development URL.
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000' 
+  : 'https://veloura-ai-mern-ecommerce.vercel.app';
+
+// Custom Axios instance create kar rahe hain taake har request absolute URL par jaye
+const api = axios.create({
+  baseURL: API_BASE_URL,
+});
+
 // --- Utility for Sleek Toast (Terminal/Dark Style) ---
 const showToast = (title, icon = 'success') => {
   const Toast = Swal.mixin({
@@ -17,7 +28,7 @@ const showToast = (title, icon = 'success') => {
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
-    background: '#0a0d14', // Your sleek dark background
+    background: '#0a0d14',
     color: '#fff',
   });
 
@@ -38,7 +49,9 @@ export const register = (name, email, password) => async (dispatch) => {
   try {
     dispatch({ type: USER_REGISTER_REQUEST });
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const { data } = await axios.post('/api/users/register', { name, email, password }, config);
+    
+    // 🔄 Relative path ko customized 'api' instance se badla
+    const { data } = await api.post('/api/users/register', { name, email, password }, config);
 
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
@@ -56,7 +69,9 @@ export const login = (email, password) => async (dispatch) => {
   try {
     dispatch({ type: USER_LOGIN_REQUEST });
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const { data } = await axios.post('/api/users/login', { email, password }, config);
+    
+    // 🔄 Relative path ko customized 'api' instance se badla
+    const { data } = await api.post('/api/users/login', { email, password }, config);
 
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
     localStorage.setItem('userInfo', JSON.stringify(data));
@@ -68,16 +83,11 @@ export const login = (email, password) => async (dispatch) => {
   }
 };
 
-// --- Logout Action (Replacing the big white modal) ---
+// --- Logout Action ---
 export const logout = () => (dispatch) => {
   localStorage.removeItem('userInfo');
   dispatch({ type: 'USER_LOGOUT' });
-  // Add any other reset constants here (e.g., USER_DETAILS_RESET)
-  
   showToast('Session Terminated', 'info');
-  
-  // Optional: Redirect to login
-  // window.location.href = '/login';
 };
 
 // --- Update Profile Action ---
@@ -87,7 +97,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 
     const { userLogin: { userInfo } } = getState();
 
-    // Double check token availability
     if (!userInfo || !userInfo.token) {
       throw new Error("Authorization failed. Please login again.");
     }
@@ -99,8 +108,8 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       },
     };
 
-    // Note: URL matches your previous failed requests
-    const { data } = await axios.put(`http://localhost:5000/api/users/profile`, user, config);
+    // 🔄 Hardcoded 'http://localhost:5000' ki jagah dynamic 'api' instance lagaya
+    const { data } = await api.put(`/api/users/profile`, user, config);
 
     dispatch({ type: 'USER_UPDATE_PROFILE_SUCCESS', payload: data });
     dispatch({ type: 'USER_LOGIN_SUCCESS', payload: data }); 
@@ -111,7 +120,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
   } catch (error) {
     const message = error.response?.data?.message || error.message;
     
-    // Agar token expire ho jaye toh auto-logout bhi trigger kar sakte hain
     if (message.includes('Not authorized') || message.includes('token failed')) {
       dispatch(logout());
     }
