@@ -29,7 +29,7 @@ const FragranceScreen = () => {
         const fetchFragrancesAndWishlist = async () => {
             try {
                 // 1. Fetch Products
-                const { data } = await axios.get('http://https://veloura-ai-mern-ecommerce.vercel.app//api/products');
+                const { data } = await axios.get('https://veloura-ai-mern-ecommerce.vercel.app/api/products');
                 const filteredFragrances = Array.isArray(data) 
                     ? data.filter((p) => p.category && p.category.trim().toLowerCase().includes('fragrance'))
                     : [];
@@ -195,7 +195,7 @@ const FragranceScreen = () => {
                                     } else {
                                         try {
                                             dispatch(addToWishlist(p));
-                                            await axios.post('http://https://veloura-ai-mern-ecommerce.vercel.app//api/wishlist', { productId: p._id, userId: user._id || user.user?._id }, config);
+                                            await axios.post('https://veloura-ai-mern-ecommerce.vercel.app/api/wishlist', { productId: p._id, userId: user._id || user.user?._id }, config);
                                         } catch (err) {
                                             console.error("Wishlist DB add error:", err);
                                         }

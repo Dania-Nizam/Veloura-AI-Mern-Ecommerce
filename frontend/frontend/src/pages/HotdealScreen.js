@@ -10,7 +10,7 @@ const HotDealsScreen = () => {
     useEffect(() => {
         const fetchHotDeals = async () => {
             try {
-                const { data } = await axios.get('http://https://veloura-ai-mern-ecommerce.vercel.app//api/products/category/hotdeals');
+                const { data } = await axios.get('https://veloura-ai-mern-ecommerce.vercel.app/api/products/category/hotdeals');
                 setProducts(data);
                 setLoading(false);
             } catch (error) {

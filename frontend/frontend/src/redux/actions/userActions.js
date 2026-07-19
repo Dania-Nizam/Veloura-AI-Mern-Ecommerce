@@ -107,7 +107,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       },
     };
 
-    // 🔄 Hardcoded 'http://https://veloura-ai-mern-ecommerce.vercel.app/' ki jagah dynamic 'api' instance lagaya
+    // 🔄 Hardcoded 'https://veloura-ai-mern-ecommerce\.vercel\.app/' ki jagah dynamic 'api' instance lagaya
     const { data } = await api.put(`/api/users/profile`, user, config);
 
     dispatch({ type: 'USER_UPDATE_PROFILE_SUCCESS', payload: data });

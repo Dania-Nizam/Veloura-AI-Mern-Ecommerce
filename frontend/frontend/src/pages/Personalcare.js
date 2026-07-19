@@ -38,7 +38,7 @@ const PersonalCareScreen = () => {
                     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
                     
                     const userId = user._id || user.user?._id;
-                    const { data: wishlistData } = await axios.get(`http://https://veloura-ai-mern-ecommerce.vercel.app//api/wishlist/${userId}`, config);
+                    const { data: wishlistData } = await axios.get(`https://veloura-ai-mern-ecommerce.vercel.app/api/wishlist/${userId}`, config);
                     if (wishlistData && wishlistData.items) {
                         dispatch(setWishlist(wishlistData.items));
                     } else if (Array.isArray(wishlistData)) {

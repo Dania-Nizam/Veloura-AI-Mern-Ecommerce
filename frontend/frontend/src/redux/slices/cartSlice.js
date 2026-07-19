@@ -16,7 +16,7 @@ export const fetchCartFromDB = createAsyncThunk(
       };
 
       // Backend endpoint se cart data get karne ke liye GET request
-      const { data } = await axios.get(`http://https://veloura-ai-mern-ecommerce.vercel.app//api/cart/${userId}`, config);
+      const { data } = await axios.get(`https://veloura-ai-mern-ecommerce.vercel.app/api/cart/${userId}`, config);
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -64,7 +64,7 @@ export const syncCartWithDB = createAsyncThunk(
         items: formattedItemsForSync // ✨ FIXED: Passing complete schema details array
       };
 
-      const { data } = await axios.post('http://https://veloura-ai-mern-ecommerce.vercel.app//api/cart', requestBody, config);
+      const { data } = await axios.post('https://veloura-ai-mern-ecommerce.vercel.app/api/cart', requestBody, config);
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);

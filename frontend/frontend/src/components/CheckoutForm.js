@@ -31,7 +31,7 @@ const CheckoutForm = ({ totalAmount }) => {
       const storedInfo = JSON.parse(localStorage.getItem("userInfo"));
       if (!storedInfo?.token) throw new Error("Session expired. Please login again.");
 
-      const { data } = await axios.post("http://https://veloura-ai-mern-ecommerce.vercel.app//api/payment/process", 
+      const { data } = await axios.post("https://veloura-ai-mern-ecommerce\.vercel\.app//api/payment/process", 
         { amount: Math.round(totalAmount * 100) }, 
         { headers: { Authorization: `Bearer ${storedInfo.token}` } }
       );
