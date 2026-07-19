@@ -24,7 +24,7 @@ const AccessoriesScreen = () => {
         const fetchAccessoriesAndWishlist = async () => {
             try {
                 // 1. Fetch Products
-                const { data } = await axios.get('http://localhost:5000/api/products');
+                const { data } = await axios.get('http://https://veloura-ai-mern-ecommerce.vercel.app//api/products');
                 const filteredAcc = data.filter(
                     (p) => p.category && (
                         p.category.trim().toLowerCase().includes('accessories') || 
@@ -41,7 +41,7 @@ const AccessoriesScreen = () => {
                     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
                     
                     const userId = user._id || user.user?._id;
-                    const { data: wishlistData } = await axios.get(`http://localhost:5000/api/wishlist/${userId}`, config);
+                    const { data: wishlistData } = await axios.get(`http://https://veloura-ai-mern-ecommerce.vercel.app//api/wishlist/${userId}`, config);
                     if (wishlistData && wishlistData.items) {
                         dispatch(setWishlist(wishlistData.items));
                     } else if (Array.isArray(wishlistData)) {
@@ -154,7 +154,7 @@ const AccessoriesScreen = () => {
                                 try {
                                     const targetId = isWishlisted._id || p._id;
                                     dispatch(removeFromWishlist(targetId));
-                                    await axios.delete(`http://localhost:5000/api/wishlist/${p._id}`, config);
+                                    await axios.delete(`http://https://veloura-ai-mern-ecommerce.vercel.app//api/wishlist/${p._id}`, config);
                                 } catch (err) {
                                     console.error("Wishlist DB remove error:", err);
                                 }

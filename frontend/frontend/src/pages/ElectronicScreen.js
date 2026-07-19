@@ -9,7 +9,7 @@ const ElectronicsScreen = () => {
     useEffect(() => {
         const fetchElectronics = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/products/category/electronics');
+                const { data } = await axios.get('http://https://veloura-ai-mern-ecommerce.vercel.app//api/products/category/electronics');
                 setProducts(data);
                 setLoading(false);
             } catch (error) {

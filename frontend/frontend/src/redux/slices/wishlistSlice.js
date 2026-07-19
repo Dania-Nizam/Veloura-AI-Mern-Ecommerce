@@ -14,8 +14,8 @@ export const addWishlistDB = createAsyncThunk(
         ? { headers: { "Content-Type": "application/json", Authorization: `Bearer ${userInfo.token}` } } 
         : {};
 
-      // Agar url poora nahi hai toh port specify karein 'http://localhost:5000/api/wishlist'
-      const { data } = await axios.post("http://localhost:5000/api/wishlist", { productId: product._id }, config);
+      // Agar url poora nahi hai toh port specify karein 'http://https://veloura-ai-mern-ecommerce.vercel.app//api/wishlist'
+      const { data } = await axios.post("http://https://veloura-ai-mern-ecommerce.vercel.app//api/wishlist", { productId: product._id }, config);
       return data.items || data;
     } catch (error) {
       return rejectWithValue(error.response && error.response.data.message ? error.response.data.message : error.message);

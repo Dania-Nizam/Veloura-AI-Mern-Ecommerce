@@ -13,7 +13,7 @@ const SearchScreen = () => {
       try {
         setLoading(true);
         // Backend API call (make sure your backend supports ?keyword=)
-        const { data } = await axios.get(`http://localhost:5000/api/products?keyword=${keyword}`);
+        const { data } = await axios.get(`http://https://veloura-ai-mern-ecommerce.vercel.app//api/products?keyword=${keyword}`);
         setProducts(data);
         setLoading(false);
       } catch (error) {

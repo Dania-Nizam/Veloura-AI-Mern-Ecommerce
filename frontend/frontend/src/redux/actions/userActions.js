@@ -11,9 +11,8 @@ import {
 
 // 🌐 Dynamic Base URL Configuration
 // Agar app Vercel par chal rahi hai toh live backend URL use hoga, warna local development URL.
-const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:5000' 
-  : 'https://veloura-ai-mern-ecommerce.vercel.app';
+// Localhost check ko bypass karke direct production URL set kar dein:
+const API_BASE_URL = 'https://veloura-ai-mern-ecommerce.vercel.app';
 
 // Custom Axios instance create kar rahe hain taake har request absolute URL par jaye
 const api = axios.create({
@@ -108,7 +107,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       },
     };
 
-    // 🔄 Hardcoded 'http://localhost:5000' ki jagah dynamic 'api' instance lagaya
+    // 🔄 Hardcoded 'http://https://veloura-ai-mern-ecommerce.vercel.app/' ki jagah dynamic 'api' instance lagaya
     const { data } = await api.put(`/api/users/profile`, user, config);
 
     dispatch({ type: 'USER_UPDATE_PROFILE_SUCCESS', payload: data });
