@@ -18,12 +18,14 @@ const app = express();
 
 // --- Middlewares ---
 app.use(express.json());
-
 app.use(cors({
-  origin: '*', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  origin: [
+    "http://localhost:3000",
+    "https://veloura-ai-mern-ecommerce-9uuk.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 }));
 
 // --- DB Connection ---
@@ -60,6 +62,14 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({
     message: err.message,
     stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+  });
+});
+
+
+app.get("/test-db", (req, res) => {
+  res.json({
+    connected: mongoose.connection.readyState === 1,
+    readyState: mongoose.connection.readyState,
   });
 });
 
