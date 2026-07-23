@@ -27,6 +27,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }));
+app.options("*", cors());
 
 // --- DB Connection ---
 mongoose
@@ -50,6 +51,13 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
+app.get("/test-db", (req, res) => {
+  res.json({
+    connected: mongoose.connection.readyState === 1,
+    readyState: mongoose.connection.readyState,
+  });
+});
+
 // --- Error Handling ---
 app.use((req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
@@ -66,12 +74,14 @@ app.use((err, req, res, next) => {
 });
 
 
-app.get("/test-db", (req, res) => {
-  res.json({
-    connected: mongoose.connection.readyState === 1,
-    readyState: mongoose.connection.readyState,
-  });
-});
+
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT} 🚀`));
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT} 🚀`);
+  });
+}
+
+module.exports = app;
